@@ -1,13 +1,27 @@
 """
-Cosmetic Bot — Chatbot de produtos cosméticos.
+Cosmetic Bot — chatbot de produtos cosméticos (Desafio do Mês 1)
 
-Integração com Ollama local (ou Gemini/Groq).
-Carrega as instruções do sistema a partir do arquivo prompt.txt e do catalogo.json.
+Você NÃO precisa alterar este arquivo.
+
+Uso interativo (para a sessão exploratória):
+    python chatbot.py
+
+Uso na suíte de avaliação:
+    from chatbot import perguntar
+    resposta = perguntar("Qual hidratante você indica para pele seca?")
+
+Configuração por variáveis de ambiente:
+    LLM_PROVIDER    ollama (padrão) | gemini | groq
+    LLM_MODEL       nome do modelo (padrões abaixo)
+    GEMINI_API_KEY  chave do Google AI Studio (se LLM_PROVIDER=gemini)
+    GROQ_API_KEY    chave do Groq (se LLM_PROVIDER=groq)
+    OLLAMA_URL      URL do Ollama (padrão: http://localhost:11434)
 """
 
 import json
 import os
 from pathlib import Path
+
 import requests
 
 BASE_DIR = Path(__file__).parent
@@ -24,15 +38,14 @@ TEMPERATURA = 0.3
 TIMEOUT = 120
 
 
-def carregar_system_prompt(nome_arquivo: str = "prompt.txt") -> str:
-    """Carrega o prompt de sistema a partir de prompt.txt e anexa o catalogo.json."""
-    caminho_prompt = BASE_DIR / nome_arquivo
-    if not caminho_prompt.exists():
-        caminho_prompt = BASE_DIR / "prompt.txt"
-        
-    prompt = caminho_prompt.read_text(encoding="utf-8").strip()
+def _carregar_system_prompt() -> str:
+    """Monta o prompt de sistema: conteúdo de prompt.txt + catálogo em JSON.
+
+    O catálogo é sempre anexado ao final, independentemente do que estiver
+    escrito em prompt.txt — editar o prompt não remove o acesso ao catálogo.
+    """
+    prompt = (BASE_DIR / "prompt.txt").read_text(encoding="utf-8").strip()
     catalogo = (BASE_DIR / "catalogo.json").read_text(encoding="utf-8").strip()
-    
     return (
         f"{prompt}\n\n"
         f"CATÁLOGO DE PRODUTOS (fonte oficial de informação):\n{catalogo}"
@@ -107,13 +120,13 @@ _PROVEDORES = {
 }
 
 
-def perguntar(pergunta: str, prompt_file: str = "prompt.txt") -> str:
+def perguntar(pergunta: str) -> str:
     """Envia uma pergunta ao Cosmetic Bot e retorna a resposta em texto."""
     if PROVIDER not in _PROVEDORES:
         raise RuntimeError(
             f"LLM_PROVIDER inválido: '{PROVIDER}'. Use: ollama, gemini ou groq."
         )
-    system_prompt = carregar_system_prompt(prompt_file)
+    system_prompt = _carregar_system_prompt()
     try:
         return _PROVEDORES[PROVIDER](system_prompt, pergunta).strip()
     except requests.exceptions.ConnectionError:
@@ -142,7 +155,7 @@ def _modo_interativo() -> None:
             break
         try:
             print(f"\nBot: {perguntar(pergunta)}\n")
-        except Exception as erro:
+        except Exception as erro:  # noqa: BLE001 — feedback amigável no terminal
             print(f"\n[erro] {erro}\n")
 
 
