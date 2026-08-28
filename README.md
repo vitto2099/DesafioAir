@@ -20,7 +20,7 @@ python main.py
 
 ---
 
-## 🔄 Como Funciona o Projeto (Visão de Ponta a Ponta)
+## 🔄 Como Funciona 
 
 ```mermaid
 flowchart TD
@@ -77,7 +77,7 @@ DesafioAir/
 ├── test_suite.py               # Suíte Pytest integrada com DeepEval
 ├── executar_avaliacao.py       # Executor formatado da avaliação
 ├── RELATORIO_DESAFIO.md        # Relatório Final detalhado (planejamento, dados e métricas)
-├── ROTEIRO_APRESENTACAO.md     # Guia direto para apresentação no Demo Day
+├── ROTEIRO_APRESENTACAO.md     # Guia direto para apresentação 
 └── exemplo/                    # Pasta original do desafio fornecida como baseline
 ```
 
