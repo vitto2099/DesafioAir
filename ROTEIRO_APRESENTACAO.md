@@ -1,4 +1,4 @@
-# 🎤 Guia de Apresentação — Cosmetic Bot (DeepEval)
+# Guia de Apresentação — Cosmetic Bot (DeepEval)
 
 > **Projeto**: Suíte de Avaliação de LLMs com DeepEval  
 > **Autor**: Vitor Camargo Kunicki  
